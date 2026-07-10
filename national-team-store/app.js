@@ -95,6 +95,30 @@ document.addEventListener("DOMContentLoaded", () => {
     const productGrid = document.getElementById("product-grid");
     const filterButtons = document.querySelectorAll(".filter-btn");
 
+    // Dark mode toggle logic
+    const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+    const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+    const themeToggleBtn = document.getElementById('theme-toggle');
+
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        themeToggleLightIcon.classList.remove('hidden');
+    } else {
+        themeToggleDarkIcon.classList.remove('hidden');
+    }
+
+    themeToggleBtn.addEventListener('click', function() {
+        themeToggleDarkIcon.classList.toggle('hidden');
+        themeToggleLightIcon.classList.toggle('hidden');
+
+        if (localStorage.theme === 'dark') {
+            document.documentElement.classList.remove('dark');
+            localStorage.theme = 'light';
+        } else {
+            document.documentElement.classList.add('dark');
+            localStorage.theme = 'dark';
+        }
+    });
+
     // Function to map team name to specific badge colors
     const getBadgeStyle = (team) => {
         switch(team) {
@@ -115,41 +139,41 @@ document.addEventListener("DOMContentLoaded", () => {
             : products.filter(p => p.category === filter);
 
         if (filteredProducts.length === 0) {
-            productGrid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-500 font-medium text-lg">No products found in this category.</div>`;
+            productGrid.innerHTML = `<div class="col-span-full py-16 text-center text-slate-500 dark:text-slate-400 font-medium text-lg">No products found in this category.</div>`;
             return;
         }
 
         filteredProducts.forEach(product => {
             const badgeStyle = getBadgeStyle(product.team);
             const featuresHtml = product.features.map(f => `
-                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-600 mb-1 mr-1">
+                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 mb-1 mr-1">
                     ${f}
                 </span>
             `).join("");
 
             const card = document.createElement("div");
-            card.className = "product-card bg-white rounded-3xl overflow-hidden border border-slate-100 flex flex-col h-full group";
+            card.className = "product-card bg-white dark:bg-slate-800 rounded-3xl overflow-hidden border border-slate-100 dark:border-slate-700 flex flex-col h-full group";
             
             card.innerHTML = `
-                <div class="relative h-72 overflow-hidden bg-slate-100">
+                <div class="relative h-72 overflow-hidden bg-slate-100 dark:bg-slate-900">
                     <img src="${product.imageUrl}" alt="${product.title}" loading="lazy" class="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110">
                     
                     <div class="absolute top-4 right-4 z-10">
-                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ring-1 ring-inset ${badgeStyle} shadow-sm backdrop-blur-sm bg-white/70">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ring-1 ring-inset ${badgeStyle} shadow-sm backdrop-blur-sm bg-white/80 dark:bg-slate-900/80">
                             ${product.team}
                         </span>
                     </div>
                 </div>
                 
                 <div class="p-6 flex flex-col flex-grow relative">
-                    <div class="absolute -top-6 right-6 bg-white rounded-full p-2 shadow-md">
-                        <div class="bg-slate-900 text-white rounded-full h-10 w-10 flex items-center justify-center">
+                    <div class="absolute -top-6 right-6 bg-white dark:bg-slate-800 rounded-full p-2 shadow-md">
+                        <div class="bg-slate-900 dark:bg-blue-600 text-white rounded-full h-10 w-10 flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
                         </div>
                     </div>
 
-                    <div class="text-xs text-blue-600 uppercase tracking-widest font-bold mb-2">${product.category.replace("-", " ")}</div>
-                    <h3 class="text-xl font-extrabold text-slate-900 mb-3 leading-tight group-hover:text-blue-700 transition-colors">${product.title}</h3>
+                    <div class="text-xs text-blue-600 dark:text-blue-400 uppercase tracking-widest font-bold mb-2">${product.category.replace("-", " ")}</div>
+                    <h3 class="text-xl font-extrabold text-slate-900 dark:text-white mb-3 leading-tight group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">${product.title}</h3>
                     
                     <div class="mb-6 flex-grow">
                         <div class="flex flex-wrap gap-1 mt-2">
@@ -157,9 +181,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         </div>
                     </div>
                     
-                    <div class="mt-auto pt-5 flex items-center justify-between border-t border-slate-100">
-                        <span class="text-2xl font-black text-slate-900">$${product.price.toFixed(2)}</span>
-                        <button class="text-sm font-bold text-blue-600 hover:text-blue-800 transition-colors uppercase tracking-wider">
+                    <div class="mt-auto pt-5 flex items-center justify-between border-t border-slate-100 dark:border-slate-700">
+                        <span class="text-2xl font-black text-slate-900 dark:text-white">$${product.price.toFixed(2)}</span>
+                        <button class="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors uppercase tracking-wider">
                             Details &rarr;
                         </button>
                     </div>
